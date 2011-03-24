@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20110323223702
+# Schema version: 20110324014514
 #
 # Table name: users
 #
@@ -9,6 +9,7 @@
 #  created_at         :datetime
 #  updated_at         :datetime
 #  encrypted_password :string(255)
+#  salt               :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -37,6 +38,11 @@ class User < ActiveRecord::Base
 			user = find_by_email(email)
 			return nil  if user.nil?
 			return user if user.has_password?(submitted_password)
+		end
+		
+		def authenticate_with_salt(id, cookie_salt)
+			user = find_by_id(id)
+			(user && user.salt == cookie_salt) ? user : nil
 		end
 	end
 	
